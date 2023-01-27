@@ -1,24 +1,37 @@
-import Card from './Card';
-import { useState } from 'react';
-import Button from './Button';
-import RatingSelect from '../ratingSelect';
-function FeedbackForm({ addFeedback }) {
+import { useState, useEffect, useContext } from 'react';
+import Card from './Shared/Card';
+import Button from './Shared/Button';
+import RatingSelect from './ratingSelect';
+import FeedbackContext from '../Context/FeedbackContext';
+function FeedbackForm() {
   const [text, setText] = useState('');
   const [disabled, setDisabled] = useState(true);
   const [message, setMessage] = useState('');
   const [rating, setRating] = useState(10);
-  const handelTextChange = (e) => {
-    if (text === '') {
+  const { addFeedback, updateFeedback, feedbackEdit } =
+    useContext(FeedbackContext);
+  // useEffect(() => {
+  //   console.log(feedbackEdit);
+  // }, [feedbackEdit]);
+  useEffect(() => {
+    if (feedbackEdit.edit === true) {
+      setDisabled(false);
+      setText(feedbackEdit.item.text);
+      setRating(feedbackEdit.item.rating);
+    }
+  }, [feedbackEdit]);
+  const handelTextChange = ({ target: { value } }) => {
+    if (value === '') {
       setDisabled(true);
       setMessage(null);
-    } else if (text !== '' && text.trim().length < 10) {
+    } else if (value !== '' && text.trim().length < 10) {
       setMessage('Text should be greater then 10 letters ');
       setDisabled(true);
     } else {
       setDisabled(false);
       setMessage(null);
     }
-    setText(e.target.value);
+    setText(value);
   };
   const handelRatingChange = (id) => {
     setRating(id);
@@ -28,9 +41,14 @@ function FeedbackForm({ addFeedback }) {
     if (text.trim().length > 10) {
       const newFeedback = {
         rating,
-        text: text,
+        text,
       };
-      addFeedback(newFeedback);
+      if (feedbackEdit.edit === true) {
+        updateFeedback(feedbackEdit.item.id, newFeedback);
+      } else {
+        addFeedback(newFeedback);
+      }
+      setText('');
     }
   };
 
@@ -45,7 +63,7 @@ function FeedbackForm({ addFeedback }) {
             onChange={handelTextChange}
             type="text"
             value={text}
-            placeholder="enter your review"
+            placeholder="Enter your review"
           />
           <Button version="secondary" type="submit" isDisabled={disabled}>
             Submit
