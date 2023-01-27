@@ -1,8 +1,7 @@
 import FeedbackItem from './FeedbackItem';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useContext, useEffect } from 'react';
+import { useContext} from 'react';
 import FeedbackContext from '../Context/FeedbackContext';
-import { FeedbackProvider } from '../Context/FeedbackContext';
 function FeedbackList() {
   const { feedback } = useContext(FeedbackContext);
   if (!feedback || feedback.length === 0) {
